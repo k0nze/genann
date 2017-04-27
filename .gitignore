@@ -1,0 +1,4 @@
+*.o
+iris
+*.data
+*.csv
