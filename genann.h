@@ -21,6 +21,8 @@
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
+ * Edited by: 
+ * Konstantin Lübeck (University of Tübingen, Chair for Embedded Systems)
  */
 
 
@@ -33,15 +35,23 @@
 extern "C" {
 #endif
 
+#ifndef DATATYPE
+#define DATATYPE 0
+#endif
+
+#if DATATYPE == 0
+typedef double datatype;
+#elif DATATYPE == 1
+typedef float datatype;
+#endif
+
 #ifndef GENANN_RANDOM
 /* We use the following for uniform random numbers between 0 and 1.
  * If you have a better function, redefine this macro. */
-#define GENANN_RANDOM() (((double)rand())/RAND_MAX)
+#define GENANN_RANDOM() (((datatype)rand())/RAND_MAX)
 #endif
 
-
-typedef double (*genann_actfun)(double a);
-
+typedef datatype (*genann_actfun)(datatype a);
 
 typedef struct genann {
     /* How many inputs, outputs, and hidden neurons. */
@@ -60,13 +70,13 @@ typedef struct genann {
     int total_neurons;
 
     /* All weights (total_weights long). */
-    double *weight;
+    datatype *weight;
 
     /* Stores input array and output of each neuron (total_neurons long). */
-    double *output;
+    datatype *output;
 
     /* Stores delta of each hidden and output neuron (total_neurons - inputs long). */
-    double *delta;
+    datatype *delta;
 
 } genann;
 
@@ -88,19 +98,19 @@ genann *genann_copy(genann const *ann);
 void genann_free(genann *ann);
 
 /* Runs the feedforward algorithm to calculate the ann's output. */
-double const *genann_run(genann const *ann, double const *inputs);
+datatype const *genann_run(genann const *ann, datatype const *inputs);
 
 /* Does a single backprop update. */
-void genann_train(genann const *ann, double const *inputs, double const *desired_outputs, double learning_rate);
+void genann_train(genann const *ann, datatype const *inputs, datatype const *desired_outputs, datatype learning_rate);
 
 /* Saves the ann. */
 void genann_write(genann const *ann, FILE *out);
 
 
-double genann_act_sigmoid(double a);
-double genann_act_sigmoid_cached(double a);
-double genann_act_threshold(double a);
-double genann_act_linear(double a);
+datatype genann_act_sigmoid(datatype a);
+datatype genann_act_sigmoid_cached(datatype a);
+datatype genann_act_threshold(datatype a);
+datatype genann_act_linear(datatype a);
 
 
 #ifdef __cplusplus
