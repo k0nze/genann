@@ -1,4 +1,4 @@
 *.o
-iris
+benchmarks/iris/iris
 *.data
 *.csv
