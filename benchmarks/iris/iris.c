@@ -12,7 +12,6 @@
  */
 
 //#define DEBUG
-
 const char *iris_data = "bezdekIris.data";
 
 datatype *input, *class;

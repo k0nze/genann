@@ -1,9 +1,10 @@
 # DATATYPE:
 # 0 : double
 # 1 : float
+# 2 : int32_t
 
 CC = gcc
-CFLAGS = -Wall -Wshadow -O0 -DDATATYPE=1
+CFLAGS = -Wall -O0 -DDATATYPE=0
 LFLAGS = -lm
 
 all: iris	
