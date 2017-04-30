@@ -23,7 +23,7 @@ One can choose the main datatype with which neural network should run. The macro
 - `1` = `float`
 - `2` = `fix16_t` (Q16.16 32bit fixed integer)
 
-In order to compile with the `fix16_t` `DATATYPE` one has to include the `libfixmath` library (how to do this can be seen in `Makefile.fix16`).
+In order to compile with the `fix16_t` `DATATYPE` one has to include the `libfixmath` library (how to do this can be seen in [`Makefile.fix16`](./Makefile.fix16)).
 By setting `DATATYPE` the datatype `datatype` will be defined.
 
 ## Example Code
@@ -140,6 +140,20 @@ datatype const *genann_run(genann const *ann, double const *inputs);
 Call `genann_run()` on a trained ANN to run a feed-forward pass on a given set of inputs. `genann_run()`
 will provide a pointer to the array of predicted outputs (of `ann->outputs` length).
 
+### Conversion
+
+With [`float_to_fixed_csv.c`](./float_to_fixed_csv.c) a CSV containing floating points numbers can be converted into a CSV with fixed point numbers (`fix16_t`) represented as `uint32_t`'s.
+
+Compile with:
+
+```bash
+make -f Makefile.fix16 float_to_fixed_csv
+```
+
+Run with:
+```bash
+./float_to_fixed_csv INPUT_CSV OUTPUT_CSV
+```
 
 ## Hints
 
@@ -148,12 +162,6 @@ will provide a pointer to the array of predicted outputs (of `ann->outputs` leng
 
 ## Extra Resources
 
-The [comp.ai.neural-nets
-FAQ](http://www.faqs.org/faqs/ai-faq/neural-nets/part1/) is an excellent
-resource for an introduction to artificial neural networks.
+The [comp.ai.neural-nets FAQ](http://www.faqs.org/faqs/ai-faq/neural-nets/part1/) is an excellent resource for an introduction to artificial neural networks.
 
-If you're looking for a heavier, more opinionated neural network library in C,
-I recommend the [FANN library](http://leenissen.dk/fann/wp/). Another
-good library is Peter van Rossum's [Lightweight Neural
-Network](http://lwneuralnet.sourceforge.net/), which despite its name, is
-heavier and has more features than Genann.
+If you're looking for a heavier, more opinionated neural network library in C, I recommend the [FANN library](http://leenissen.dk/fann/wp/). Another good library is Peter van Rossum's [Lightweight Neural Network](http://lwneuralnet.sourceforge.net/), which despite its name, is heavier and has more features than Genann.
