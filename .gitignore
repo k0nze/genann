@@ -1,6 +1,6 @@
 *.o
 benchmarks/iris/iris
-*.data
+benchmarks/*/*.data
 *.csv
 example1
 example2
