@@ -1,10 +1,23 @@
 CCFLAGS = -Wall -Wshadow -O2 -g -Ilibfixmath -DDATATYPE=2
+SRC_FILES = genann.o libfixmath/fix16.o libfixmath/fix16_exp.o
 
-all: test 
+all: test example1 example2 example3 example4
 
-test: test.o genann.o libfixmath/fix16.o libfixmath/fix16_exp.o
+test: test.o $(SRC_FILES)
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
 	./$@
+
+example1: example1.o $(SRC_FILES)
+	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
+
+example2: example2.o $(SRC_FILES)
+	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
+
+example3: example3.o $(SRC_FILES)
+	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
+
+example4: example4.o $(SRC_FILES)
+	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
 
 .c.o:
 	$(CC) -c $(CCFLAGS) $< -o $@

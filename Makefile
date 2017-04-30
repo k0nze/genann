@@ -1,14 +1,14 @@
-CCFLAGS = -Wall -Wshadow -O2 -g
+# DATATYPE
+# 0 : double
+# 1 : float
+
+CCFLAGS = -Wall -Wshadow -O2 -g -DDATATYPE=1
 LFLAGS = -lm
 
 
 all: test example1 example2 example3 example4
 
 test: test.o genann.o
-	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
-	./$@
-
-test16: test.o genann.o
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
 	./$@
 
