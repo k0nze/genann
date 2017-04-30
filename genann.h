@@ -57,8 +57,7 @@ int fix16_to_int_cast(fix16_t a);
 #if DATATYPE == 0 || DATATYPE == 1
 #define GENANN_RANDOM() (((datatype)rand())/RAND_MAX)
 #elif DATATYPE == 2
-// TODO redfine for fixed point data types to not use double rand()
-#define GENANN_RANDOM() fix16_from_dbl((((double)rand())/RAND_MAX))
+#define GENANN_RANDOM() fix16_div( (uint32_t) rand(), fix16_maximum)
 #endif
 #endif
 

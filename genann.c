@@ -201,7 +201,6 @@ genann *genann_copy(genann const *ann) {
     return ret;
 }
 
-// TODO
 void genann_randomize(genann *ann) {
     #if DATATYPE == 0 || DATATYPE == 1
     int i;
