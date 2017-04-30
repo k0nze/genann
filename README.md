@@ -1,18 +1,12 @@
-[![Build Status](https://travis-ci.org/codeplea/genann.svg?branch=master)](https://travis-ci.org/codeplea/genann)
-
 <img alt="Genann logo" src="https://codeplea.com/public/content/genann_logo.png" align="right" />
 
-# Genann
+# Genann (with fixed point number support)
 
-Genann is a minimal, well-tested library for training and using feedforward
-artificial neural networks (ANN) in C. Its primary focus is on being simple,
-fast, reliable, and hackable. It achieves this by providing only the necessary
-functions and little extra.
+Genann is a minimal, well-tested library for training and using feedforward artificial neural networks (ANN) in C (forked from: [https://github.com/codeplea/genann](https://github.com/codeplea/genann)). Its primary focus is on being simple, fast, reliable, and hackable. It achieves this by providing only the necessary functions and little extra. This version was extended to also support fixed point numbers. 
 
 ## Features
 
-- **ANSI C with no dependencies**.
-- Contained in a single source code and header file.
+- **ANSI C**.
 - Simple.
 - Fast and thread-safe.
 - Easily extendible.
@@ -23,7 +17,14 @@ functions and little extra.
 
 ## Building
 
-Genann is self-contained in two files: `genann.c` and `genann.h`. To use Genann, simply add those two files to your project.
+One can choose the main datatype with which neural network should run. The macro `DATATYPE` in [`genann.h`](./genann.h) can be set to:
+
+- `0` = `double`
+- `1` = `float`
+- `2` = `fix16_t` (Q16.16 32bit fixed integer)
+
+In order to compile with the `fix16_t` `DATATYPE` one has to include the `libfixmath` library (how to do this can be seen in `Makefile.fix16`).
+By setting `DATATYPE` the datatype `datatype` will be defined.
 
 ## Example Code
 
@@ -48,7 +49,7 @@ predict on a test data point:
 #include "genann.h"
 
 /* Not shown, loading your training and test data. */
-double **training_data_input, **training_data_output, **test_data_input;
+datatype **training_data_input, **training_data_output, **test_data_input;
 
 /* New network with 2 inputs,
  * 1 hidden layer of 3 neurons each,
@@ -62,8 +63,14 @@ for (i = 0; i < 300; ++i) {
 }
 
 /* Run the network and see what it predicts. */
-double const *prediction = genann_run(ann, test_data_input[0]);
+datatype const *prediction = genann_run(ann, test_data_input[0]);
+#if DATATYPE == 0 || DATATYPE == 1
+/* output for double and float */
 printf("Output for the first test data point is: %f, %f\n", prediction[0], prediction[1]);
+#elif DATATYPE == 2
+/* output for fix16_t */
+printf("Output for the first test data point is: %f, %f\n", fix16_to_float(prediction[0]), fix16_to_float(prediction[1]));
+#endif
 
 genann_free(ann);
 ```
@@ -95,7 +102,7 @@ Call `genann_free()` when you're finished with an ANN returned by `genann_init()
 ### Training ANNs
 ```C
 void genann_train(genann const *ann, double const *inputs,
-        double const *desired_outputs, double learning_rate);
+        datatype const *desired_outputs, datatype learning_rate);
 ```
 
 `genann_train()` will preform one update using standard backpropogation. It
@@ -127,7 +134,7 @@ Genann provides the `genann_read()` and `genann_write()` functions for loading o
 ### Evaluating
 
 ```C
-double const *genann_run(genann const *ann, double const *inputs);
+datatype const *genann_run(genann const *ann, double const *inputs);
 ```
 
 Call `genann_run()` on a trained ANN to run a feed-forward pass on a given set of inputs. `genann_run()`

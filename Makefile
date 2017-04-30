@@ -37,3 +37,4 @@ example4: example4.o genann.o
 	-rm example3
 	-rm example4
 	-rm test
+	-rm float_to_fixed_csv
