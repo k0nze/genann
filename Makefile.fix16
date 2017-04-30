@@ -24,7 +24,10 @@ example4: example4.o $(SRC_FILES)
 
 .PHONY clean:
 	-rm *.o
-	-rm libfixmath/*.o
 	-rm *.exe
+	-rm persist.txt
+	-rm example1
+	-rm example2
+	-rm example3
+	-rm example4
 	-rm test
-
