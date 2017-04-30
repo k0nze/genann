@@ -19,6 +19,9 @@ example3: example3.o $(SRC_FILES)
 example4: example4.o $(SRC_FILES)
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
 
+fixed_to_float_csv: float_to_fixed_csv.o $(SRC_FILES)
+	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
+
 .c.o:
 	$(CC) -c $(CCFLAGS) $< -o $@
 
