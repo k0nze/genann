@@ -4,11 +4,13 @@ LFLAGS = -lm
 
 all: test example1 example2 example3 example4
 
-
 test: test.o genann.o
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
 	./$@
 
+test16: test.o genann.o
+	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
+	./$@
 
 example1: example1.o genann.o
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
@@ -26,7 +28,12 @@ example4: example4.o genann.o
 	$(CC) -c $(CCFLAGS) $< -o $@
 
 
-clean:
-	rm *.o
-	rm *.exe
-	rm persist.txt
+.PHONY clean:
+	-rm *.o
+	-rm *.exe
+	-rm persist.txt
+	-rm example1
+	-rm example2
+	-rm example3
+	-rm example4
+	-rm test

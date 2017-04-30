@@ -29,15 +29,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-
-
 void basic() {
     genann *ann = genann_init(1, 0, 0, 1);
 
     lequal(ann->total_weights, 2);
-    double a;
+    datatype a;
 
-
+    #if DATATYPE == 0 || DATATYPE == 1
     a = 0;
     ann->weight[0] = 0;
     ann->weight[1] = 0;
@@ -61,10 +59,34 @@ void basic() {
 
     a = -10;
     lfequal(0.0, *genann_run(ann, &a));
+    #elif DATATYPE == 2
+    a = fix16_from_float(0);
+    ann->weight[0] = fix16_from_float(0);
+    ann->weight[1] = fix16_from_float(0);
+    lfequal(0.5, fix16_to_float(*genann_run(ann, &a)));
+
+    a = fix16_from_float(1);
+    lfequal(0.5, fix16_to_float(*genann_run(ann, &a)));
+
+    a = fix16_from_float(11);
+    lfequal(0.5, fix16_to_float(*genann_run(ann, &a)));
+
+    a = fix16_from_float(1);
+    ann->weight[0] = fix16_from_float(1);
+    ann->weight[1] = fix16_from_float(1);
+    lfequal(0.5, fix16_to_float(*genann_run(ann, &a)));
+
+    a = fix16_from_float(10);
+    ann->weight[0] = fix16_from_float(1);
+    ann->weight[1] = fix16_from_float(1);
+    lfequal(1.0, fix16_to_float(*genann_run(ann, &a)));
+
+    a = fix16_from_float(-10);
+    lfequal(0.0, fix16_to_float(*genann_run(ann, &a)));
+    #endif
 
     genann_free(ann);
 }
-
 
 void xor() {
     genann *ann = genann_init(2, 1, 2, 1);
@@ -73,29 +95,66 @@ void xor() {
 
     lequal(ann->total_weights, 9);
 
-    /* First hidden. */
+    #if DATATYPE == 0 || DATATYPE == 1
+    // First hidden.
     ann->weight[0] = .5;
     ann->weight[1] = 1;
     ann->weight[2] = 1;
 
-    /* Second hidden. */
+    /// Second hidden.
     ann->weight[3] = 1;
     ann->weight[4] = 1;
     ann->weight[5] = 1;
 
-    /* Output. */
+    // Output.
     ann->weight[6] = .5;
     ann->weight[7] = 1;
     ann->weight[8] = -1;
 
 
-    double input[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
-    double output[4] = {0, 1, 1, 0};
-
+    datatype input[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+    datatype output[4] = {0, 1, 1, 0};
+    
     lfequal(output[0], *genann_run(ann, input[0]));
     lfequal(output[1], *genann_run(ann, input[1]));
     lfequal(output[2], *genann_run(ann, input[2]));
     lfequal(output[3], *genann_run(ann, input[3]));
+    #elif DATATYPE == 2
+    // First hidden.
+    ann->weight[0] = fix16_from_float(.5);
+    ann->weight[1] = fix16_from_float(1);
+    ann->weight[2] = fix16_from_float(1);
+
+    /// Second hidden.
+    ann->weight[3] = fix16_from_float(1);
+    ann->weight[4] = fix16_from_float(1);
+    ann->weight[5] = fix16_from_float(1);
+
+    // Output.
+    ann->weight[6] = fix16_from_float(.5);
+    ann->weight[7] = fix16_from_float(1);
+    ann->weight[8] = fix16_from_float(-1);
+
+
+    datatype input[4][2] = {
+        {fix16_from_float(0), fix16_from_float(0)}, 
+        {fix16_from_float(0), fix16_from_float(1)}, 
+        {fix16_from_float(1), fix16_from_float(0)}, 
+        {fix16_from_float(1), fix16_from_float(1)}
+    };
+
+    datatype output[4] = {
+        fix16_from_float(0), 
+        fix16_from_float(1), 
+        fix16_from_float(1), 
+        fix16_from_float(0)
+    };
+
+    lfequal(fix16_to_float(output[0]), fix16_to_float(*genann_run(ann, input[0])));
+    lfequal(fix16_to_float(output[1]), fix16_to_float(*genann_run(ann, input[1])));
+    lfequal(fix16_to_float(output[2]), fix16_to_float(*genann_run(ann, input[2])));
+    lfequal(fix16_to_float(output[3]), fix16_to_float(*genann_run(ann, input[3])));
+    #endif
 
     genann_free(ann);
 }
@@ -103,23 +162,36 @@ void xor() {
 
 void backprop() {
     genann *ann = genann_init(1, 0, 0, 1);
+    datatype input, output;
 
-    double input, output;
+    #if DATATYPE == 0 || DATATYPE == 1
     input = .5;
     output = 1;
 
-    double first_try = *genann_run(ann, &input);
+    datatype first_try = *genann_run(ann, &input);
     genann_train(ann, &input, &output, .5);
-    double second_try = *genann_run(ann, &input);
+    datatype second_try = *genann_run(ann, &input);
+
     lok(fabs(first_try - output) > fabs(second_try - output));
+    #elif DATATYPE == 2 
+    input = fix16_from_float(0.5);
+    output = fix16_from_float(1.0);
+
+    datatype first_try = *genann_run(ann, &input);
+    genann_train(ann, &input, &output, fix16_from_float(0.5));
+    datatype second_try = *genann_run(ann, &input);
+
+    lok(fabs(fix16_to_float(first_try) - fix16_to_float(output)) > fabs(fix16_to_float(second_try) - fix16_to_float(output)));
+    #endif
 
     genann_free(ann);
 }
 
 
 void train_and() {
-    double input[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
-    double output[4] = {0, 0, 0, 1};
+    #if DATATYPE == 0 || DATATYPE == 1
+    datatype input[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+    datatype output[4] = {0, 0, 0, 1};
 
     genann *ann = genann_init(2, 0, 0, 1);
 
@@ -137,13 +209,46 @@ void train_and() {
     lfequal(output[2], *genann_run(ann, input[2]));
     lfequal(output[3], *genann_run(ann, input[3]));
 
+    #elif DATATYPE == 2
+    datatype input[4][2] = {
+        {fix16_from_float(0), fix16_from_float(0)}, 
+        {fix16_from_float(0), fix16_from_float(1)}, 
+        {fix16_from_float(1), fix16_from_float(0)}, 
+        {fix16_from_float(1), fix16_from_float(1)}
+    };
+
+    datatype output[4] = {
+        fix16_from_float(0), 
+        fix16_from_float(0), 
+        fix16_from_float(0), 
+        fix16_from_float(1)
+    };
+
+    genann *ann = genann_init(2, 0, 0, 1);
+
+    int i, j;
+
+    for (i = 0; i < 50; ++i) {
+        for (j = 0; j < 4; ++j) {
+            genann_train(ann, input[j], output + j, fix16_from_float(0.8));
+        }
+    }
+
+    ann->activation_output = genann_act_threshold;
+    lfequal(fix16_to_float(output[0]), fix16_to_float(*genann_run(ann, input[0])));
+    lfequal(fix16_to_float(output[1]), fix16_to_float(*genann_run(ann, input[1])));
+    lfequal(fix16_to_float(output[2]), fix16_to_float(*genann_run(ann, input[2])));
+    lfequal(fix16_to_float(output[3]), fix16_to_float(*genann_run(ann, input[3])));
+    #endif
+
     genann_free(ann);
 }
 
 
 void train_or() {
-    double input[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
-    double output[4] = {0, 1, 1, 1};
+    #if DATATYPE == 0 || DATATYPE == 1
+    datatype input[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+    datatype output[4] = {0, 1, 1, 1};
 
     genann *ann = genann_init(2, 0, 0, 1);
     genann_randomize(ann);
@@ -161,15 +266,46 @@ void train_or() {
     lfequal(output[1], *genann_run(ann, input[1]));
     lfequal(output[2], *genann_run(ann, input[2]));
     lfequal(output[3], *genann_run(ann, input[3]));
+    #elif DATATYPE == 2
+    datatype input[4][2] = {
+        {fix16_from_float(0), fix16_from_float(0)}, 
+        {fix16_from_float(0), fix16_from_float(1)}, 
+        {fix16_from_float(1), fix16_from_float(0)}, 
+        {fix16_from_float(1), fix16_from_float(1)}
+    };
+
+    datatype output[4] = {
+        fix16_from_float(0), 
+        fix16_from_float(1), 
+        fix16_from_float(1), 
+        fix16_from_float(1)
+    };
+
+    genann *ann = genann_init(2, 0, 0, 1);
+    genann_randomize(ann);
+
+    int i, j;
+
+    for (i = 0; i < 50; ++i) {
+        for (j = 0; j < 4; ++j) {
+            genann_train(ann, input[j], output + j, fix16_from_float(.8));
+        }
+    }
+
+    ann->activation_output = genann_act_threshold;
+    lfequal(fix16_to_float(output[0]), fix16_to_float(*genann_run(ann, input[0])));
+    lfequal(fix16_to_float(output[1]), fix16_to_float(*genann_run(ann, input[1])));
+    lfequal(fix16_to_float(output[2]), fix16_to_float(*genann_run(ann, input[2])));
+    lfequal(fix16_to_float(output[3]), fix16_to_float(*genann_run(ann, input[3])));
+    #endif
 
     genann_free(ann);
 }
 
-
-
 void train_xor() {
-    double input[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
-    double output[4] = {0, 1, 1, 0};
+    #if DATATYPE == 0 || DATATYPE == 1
+    datatype input[4][2] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}};
+    datatype output[4] = {0, 1, 1, 0};
 
     genann *ann = genann_init(2, 1, 2, 1);
 
@@ -179,7 +315,7 @@ void train_xor() {
         for (j = 0; j < 4; ++j) {
             genann_train(ann, input[j], output + j, 3);
         }
-        /* printf("%1.2f ", xor_score(ann)); */
+        // printf("%1.2f ", xor_score(ann));
     }
 
     ann->activation_output = genann_act_threshold;
@@ -187,10 +323,41 @@ void train_xor() {
     lfequal(output[1], *genann_run(ann, input[1]));
     lfequal(output[2], *genann_run(ann, input[2]));
     lfequal(output[3], *genann_run(ann, input[3]));
+    #elif DATATYPE == 2
+    datatype input[4][2] = {
+        {fix16_from_float(0), fix16_from_float(0)}, 
+        {fix16_from_float(0), fix16_from_float(1)}, 
+        {fix16_from_float(1), fix16_from_float(0)}, 
+        {fix16_from_float(1), fix16_from_float(1)}
+    };
+
+    datatype output[4] = {
+        fix16_from_float(0), 
+        fix16_from_float(1), 
+        fix16_from_float(1), 
+        fix16_from_float(0)
+    };
+
+    genann *ann = genann_init(2, 1, 2, 1);
+
+    int i, j;
+
+    for (i = 0; i < 500; ++i) {
+        for (j = 0; j < 4; ++j) {
+            genann_train(ann, input[j], output + j, fix16_from_float(3));
+        }
+        // printf("%1.2f ", xor_score(ann));
+    }
+
+    ann->activation_output = genann_act_threshold;
+    lfequal(fix16_to_float(output[0]), fix16_to_float(*genann_run(ann, input[0])));
+    lfequal(fix16_to_float(output[1]), fix16_to_float(*genann_run(ann, input[1])));
+    lfequal(fix16_to_float(output[2]), fix16_to_float(*genann_run(ann, input[2])));
+    lfequal(fix16_to_float(output[3]), fix16_to_float(*genann_run(ann, input[3])));
+    #endif
 
     genann_free(ann);
 }
-
 
 
 void persist() {
@@ -241,18 +408,29 @@ void copy() {
     genann_free(second);
 }
 
-
+/*
 void sigmoid() {
-    double i = -20;
-    const double max = 20;
-    const double d = .0001;
+    #if DATATYPE == 0 || DATATYPE == 1
+    datatype i = -20;
+    const datatype max = 20;
+    const datatype d = .0001;
 
     while (i < max) {
         lfequal(genann_act_sigmoid(i), genann_act_sigmoid_cached(i));
         i += d;
     }
-}
+	#elif DATATYPE == 2
+	datatype i = fix16_from_float(-20);
+    const datatype max = fix16_from_float(20);
+    const datatype d = fix16_from_float(.001);
 
+    while (i < max) {
+        lfequal(fix16_to_float(genann_act_sigmoid(i)), fix16_to_float(genann_act_sigmoid_cached(i)));
+        i += d;
+    }
+	#endif
+}
+*/
 
 int main(int argc, char *argv[])
 {
@@ -268,7 +446,7 @@ int main(int argc, char *argv[])
     lrun("train xor", train_xor);
     lrun("persist", persist);
     lrun("copy", copy);
-    lrun("sigmoid", sigmoid);
+    //lrun("sigmoid", sigmoid);
 
     lresults();
 

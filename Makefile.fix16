@@ -1,0 +1,17 @@
+CCFLAGS = -Wall -Wshadow -O2 -g -Ilibfixmath -DDATATYPE=2
+
+all: test 
+
+test: test.o genann.o libfixmath/fix16.o libfixmath/fix16_exp.o
+	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
+	./$@
+
+.c.o:
+	$(CC) -c $(CCFLAGS) $< -o $@
+
+.PHONY clean:
+	-rm *.o
+	-rm libfixmath/*.o
+	-rm *.exe
+	-rm test
+

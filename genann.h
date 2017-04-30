@@ -43,12 +43,23 @@ extern "C" {
 typedef double datatype;
 #elif DATATYPE == 1
 typedef float datatype;
+#elif DATATYPE == 2
+#include "libfixmath/fix16.h"
+
+typedef fix16_t datatype;
+
+int fix16_to_int_cast(fix16_t a);
 #endif
 
 #ifndef GENANN_RANDOM
 /* We use the following for uniform random numbers between 0 and 1.
  * If you have a better function, redefine this macro. */
+#if DATATYPE == 0 || DATATYPE == 1
 #define GENANN_RANDOM() (((datatype)rand())/RAND_MAX)
+#elif DATATYPE == 2
+// TODO redfine for fixed point data types to not use double rand()
+#define GENANN_RANDOM() fix16_from_dbl((((double)rand())/RAND_MAX))
+#endif
 #endif
 
 typedef datatype (*genann_actfun)(datatype a);
@@ -108,7 +119,7 @@ void genann_write(genann const *ann, FILE *out);
 
 
 datatype genann_act_sigmoid(datatype a);
-datatype genann_act_sigmoid_cached(datatype a);
+//datatype genann_act_sigmoid_cached(datatype a);
 datatype genann_act_threshold(datatype a);
 datatype genann_act_linear(datatype a);
 
