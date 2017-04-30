@@ -1,7 +1,7 @@
 CCFLAGS = -Wall -Wshadow -O2 -g -Ilibfixmath -DDATATYPE=2
 SRC_FILES = genann.o libfixmath/fix16.o libfixmath/fix16_exp.o
 
-all: test example1 example2 example3 example4
+all: test example1 example2 example3 example4 float_to_fixed_csv
 
 test: test.o $(SRC_FILES)
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
@@ -19,7 +19,7 @@ example3: example3.o $(SRC_FILES)
 example4: example4.o $(SRC_FILES)
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
 
-fixed_to_float_csv: float_to_fixed_csv.o $(SRC_FILES)
+float_to_fixed_csv: float_to_fixed_csv.o $(SRC_FILES)
 	$(CC) $(CCFLAGS) -o $@ $^ $(LFLAGS)
 
 .c.o:

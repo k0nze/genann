@@ -52,7 +52,6 @@ datatype genann_act_sigmoid(datatype a) {
     #endif
 }
 
-/*
 datatype genann_act_sigmoid_cached(datatype a) {
     // If you're optimizing for memory usage, just
     // delete this entire function and replace references
@@ -106,7 +105,6 @@ datatype genann_act_sigmoid_cached(datatype a) {
     #endif
     return lookup[i];
 }
-*/
 
 datatype genann_act_threshold(datatype a) {
     #if DATATYPE == 0 || DATATYPE == 1

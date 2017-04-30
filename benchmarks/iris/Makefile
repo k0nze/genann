@@ -1,25 +1,28 @@
-# DATATYPE:
-# 0 : double
-# 1 : float
-# 2 : int32_t
-
 CC = gcc
-CFLAGS = -Wall -O0 -DDATATYPE=0
+CFLAGS = -Wall -O2
 LFLAGS = -lm
 
-all: iris	
+all: iris_double iris_float iris_fix16
 
-debug: irisdebug
+iris_double: iris.o genann.o
+	$(CC) $(CFLAGS) -DDATATYPE=0 -o $@ $^ $(LFLAGS)
 
-irisdebug: CFLAGS += -DDEBUG
-irisdebug: iris
+iris_float: iris.o genann.o
+	$(CC) $(CFLAGS) -DDATATYPE=1 -o $@ $^ $(LFLAGS)
 
-iris: iris.o genann.o
-	$(CC) $(CFLAGS) -o $@ $^ $(LFLAGS)
+iris_fix16: bezdekIris.fix16.data
+	$(CC) -c $(CFLAGS) -Ilibfixmath libfixmath/fix16.c -o libfixmath/fix16.o
+	$(CC) -c $(CFLAGS) -Ilibfixmath libfixmath/fix16_exp.c -o libfixmath/fix16_exp.o
+	$(CC) -c $(CFLAGS) -DDATATYPE=2 -Ilibfixmath genann.c -o genann.o
+	$(CC) -c $(CFLAGS) -DDATATYPE=2 -Ilibfixmath iris.c -o iris_fix16.o
+	$(CC) $(CFLAGS) -DDATATYPE=2 -Ilibfixmath libfixmath/fix16.o libfixmath/fix16_exp.o genann.o iris_fix16.o -o iris_fix16 $(LFLAGS)
+
+bezdekIris.fix16.data:
+	../../float_to_fixed_csv bezdekIris.data bezdekIris.fix16.data
 
 .c.o:
 	$(CC) -c $(CFLAGS) $< -o $@
 
 .PHONY clean:
 	-rm *.o
-	-rm iris
+	-rm iris_*
