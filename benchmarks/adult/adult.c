@@ -201,13 +201,22 @@ datatype convert_native_country(const char *native_country) {
     }
 }
 
-int main() {
+int main(int argc, char** argv) {
 
     #ifdef DEBUG
     printf("GENANN ADULT benchmark.\n");
     printf("Train an ANN on the ADULT dataset using backpropagation.\n");
     #endif
 
+    int hidden_layers = 0;
+    int neurons_per_hidden_layer = 0;
+    int training_loops = 500;
+
+    if(argc == 4) {
+        hidden_layers = atoi(argv[1]);
+        neurons_per_hidden_layer = atoi(argv[2]);
+        training_loops = atoi(argv[3]);
+    }
 
     const char *adult_data = "adult.data";
     FILE *in = fopen(adult_data, "r");
@@ -318,13 +327,14 @@ int main() {
     }
 
     // init neural network
-    genann *ann = genann_init(13, 1, 8, 2);
+    genann *ann = genann_init(13, hidden_layers, neurons_per_hidden_layer, 2);
 
     // train neural network 
-    int loops = 500;
+    int loops = training_loops;
 
     #ifdef DEBUG
     printf("Training for %d loops over data.\n", loops);
+    printf("With %d hidden layers and %d neurons per hidden layer.\n", hidden_layers, neurons_per_hidden_layer);
     int counter = 0;
     int percent = 0;
     printf("0%%");
