@@ -1,5 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -O0
+LFLAGS = -lm
 
 all: adult_float
 
