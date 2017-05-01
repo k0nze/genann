@@ -307,8 +307,8 @@ int main() {
                     // output: income
                     // class[0] == <=50K
                     // class[1] == >50K
-                    if(strcmp(split, "<=50K\n") == 0 ) { class[i+0] = 1.0; class[i+1] = 0.0;}
-                    else {class[i+0] = 0.0; class[i+1] = 1.0;}
+                    if(strcmp(split, "<=50K\n") == 0 ) { class[2*i+0] = 1.0; class[2*i+1] = 0.0;}
+                    else {class[2*i+0] = 0.0; class[2*i+1] = 1.0;}
                     break;
             }
             split = strtok(0, ", ");
@@ -318,10 +318,10 @@ int main() {
     }
 
     // init neural network
-    genann *ann = genann_init(13, 4, 13, 2);
+    genann *ann = genann_init(13, 1, 8, 2);
 
     // train neural network 
-    int loops = 5000;
+    int loops = 500;
 
     #ifdef DEBUG
     printf("Training for %d loops over data.\n", loops);
