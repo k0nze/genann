@@ -1,5 +1,6 @@
 *.o
-benchmarks/iris/iris
+benchmarks/iris/iris_*
+benchmarks/adult/adult_*
 benchmarks/*/*.data
 *.csv
 example1
