@@ -18,6 +18,21 @@ void syntax_msg() {
     printf("\t-h | --help : displays this text\n");
 }
 
+// TODO it works, however it needs improvement
+int is_number(char* str) {
+    int i = 0;
+    while(str[i] != '\0') {
+        if((isdigit(str[i]) == 0) && (str[i] != '-') && (str[i] != '.')) {
+            return 0;
+        }
+        i++;
+    }
+    if(i == 0) {
+        return 0;
+    }
+    return 1;
+}
+
 int main(int argc, char *argv[]) {
     if(argc == 2) {
         if(strcmp(argv[1], "-h") == 0 ||strcmp(argv[1], "--help") == 0) {
@@ -70,7 +85,7 @@ int main(int argc, char *argv[]) {
         char *split = strtok(input_line, ",");
 
         for(i = 0; i < columns; i++) {
-            if(isnumber(*split)) {
+            if(is_number(split)) {
                 double temp = atof(split);
                 fprintf(output, "%u", (uint32_t) fix16_from_dbl(temp));
             } else {
